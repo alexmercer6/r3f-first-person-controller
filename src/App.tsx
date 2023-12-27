@@ -13,6 +13,7 @@ function App() {
           attach="background"
           args={['black']}
         />
+
         <Experience />
       </Canvas>
       <Crosshair />

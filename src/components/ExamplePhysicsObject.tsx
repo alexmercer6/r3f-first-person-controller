@@ -22,7 +22,7 @@ export const ExamplePhysicsObject = () => {
       direction: downward,
       raycaster,
       rayStartPosition: meshRef.current?.position ?? pos,
-      scene,
+
       collisionDistance,
       intersectObjects: scene.children,
     });
@@ -33,6 +33,21 @@ export const ExamplePhysicsObject = () => {
       meshRef.current.position.y += newVelocity * 0.02; // Update position
 
       setVelocity(newVelocity);
+    }
+
+    if (meshRef.current) {
+      if (
+        meshRef.current.position.distanceTo(camera.position) < 10 &&
+        meshRef.current.position.distanceTo(camera.position) > 2
+      ) {
+        const cameraDirection = camera.position
+          .clone()
+          .sub(meshRef.current.position)
+          .normalize();
+
+        meshRef.current.lookAt(camera.position);
+        meshRef.current.translateOnAxis(cameraDirection, 0.1);
+      }
     }
 
     // Basic gravity simulation

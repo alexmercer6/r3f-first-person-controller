@@ -11,7 +11,6 @@ interface isCollidingProps {
   direction: Vector3;
   raycaster: Raycaster;
   rayStartPosition: Vector3;
-  scene: Scene;
   collisionDistance: number;
   intersectObjects: Object3D[];
 }
@@ -19,7 +18,6 @@ export const isColliding = ({
   direction,
   raycaster,
   rayStartPosition,
-  scene,
   collisionDistance,
   intersectObjects,
 }: isCollidingProps) => {

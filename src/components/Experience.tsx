@@ -3,6 +3,7 @@ import { Floor } from './Floor';
 import { ExamplePhysicsObject } from './ExamplePhysicsObject';
 import { CameraControls } from './controls/CameraControls';
 import { CandyCane } from './models/CandyCane';
+import { EnemyBlue } from './models/EnemyBlue';
 
 const Experience = () => {
   return (
@@ -22,13 +23,13 @@ const Experience = () => {
       <ambientLight />
 
       <Floor />
-      <mesh
+      {/* <mesh
         position={[10, 0, 0]}
         castShadow
       >
         <boxBufferGeometry args={[3, 3, 3]} />
         <meshStandardMaterial color="orange" />
-      </mesh>
+      </mesh> */}
     </>
   );
 };

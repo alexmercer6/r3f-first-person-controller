@@ -1,4 +1,5 @@
 import { useLoader } from '@react-three/fiber';
+import { RigidBody } from '@react-three/rapier';
 import { Vector2 } from 'three';
 import { TextureLoader } from 'three/src/loaders/TextureLoader';
 // import { TextureLoader } from "three";

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, ReactNode } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import {
   PointerLockControls,
@@ -24,6 +24,9 @@ import { collisionDistance, gravity } from '../../global/constants';
 import { handleMovementKeys } from './helpers/handleMovementKeys';
 import { isColliding } from './helpers/isColliding';
 import { DecalGeometry } from 'three/examples/jsm/geometries/DecalGeometry';
+import { EnemyBlue } from '../models/EnemyBlue';
+import { RigidBody } from '@react-three/rapier';
+import { ExamplePhysicsObject } from '../ExamplePhysicsObject';
 
 const bullet = new Mesh();
 const material = new MeshStandardMaterial({ color: 'red' });
@@ -49,9 +52,8 @@ decal.material = decalMaterial;
 export const CameraControls = ({ ...props }: PointerLockControlsProps) => {
   const velocity = useRef<number>(0);
   const isJumping = useRef<boolean>(false);
-  const shakeObject = useRef<Mesh | null>(null);
+  const shakeObject = useRef<Mesh | Group | null>(null);
   const bulletRef = useRef<Mesh | null>(null);
-  const exampleRef = useRef<Mesh | null>(null);
 
   //TODO: Fix type
   const controls = useRef<any>(null);
@@ -78,6 +80,7 @@ export const CameraControls = ({ ...props }: PointerLockControlsProps) => {
 
       bulletRef.current = bullet;
       bulletRef.current.position.set(pos.x, pos.y, pos.z);
+      bulletRef.current.userData = { bullet: true };
 
       scene.add(bulletRef.current);
     };
@@ -121,7 +124,6 @@ export const CameraControls = ({ ...props }: PointerLockControlsProps) => {
       direction,
       raycaster,
       rayStartPosition: camera.position,
-      scene,
       collisionDistance,
       intersectObjects: scene.children,
     });
@@ -129,7 +131,6 @@ export const CameraControls = ({ ...props }: PointerLockControlsProps) => {
       direction: backward,
       raycaster,
       rayStartPosition: camera.position,
-      scene,
       collisionDistance,
       intersectObjects: scene.children,
     });
@@ -137,7 +138,6 @@ export const CameraControls = ({ ...props }: PointerLockControlsProps) => {
       direction: left,
       raycaster,
       rayStartPosition: camera.position,
-      scene,
       collisionDistance,
       intersectObjects: scene.children,
     });
@@ -145,7 +145,6 @@ export const CameraControls = ({ ...props }: PointerLockControlsProps) => {
       direction: right,
       raycaster,
       rayStartPosition: camera.position,
-      scene,
       collisionDistance,
       intersectObjects: scene.children,
     });
@@ -153,7 +152,6 @@ export const CameraControls = ({ ...props }: PointerLockControlsProps) => {
       direction: downward,
       raycaster,
       rayStartPosition: camera.position,
-      scene,
       collisionDistance,
       intersectObjects: scene.children,
     });
@@ -206,13 +204,12 @@ export const CameraControls = ({ ...props }: PointerLockControlsProps) => {
         direction: bulletDirection.current,
         raycaster,
         rayStartPosition: bulletRef.current.position,
-        scene,
         collisionDistance,
         intersectObjects: scene.children.filter((e) => e.userData.enemy),
       });
 
-      if (hit) {
-        shakeObject.current = hit.object as Mesh;
+      if (hit && (hit.object instanceof Mesh || hit.object instanceof Group)) {
+        shakeObject.current = hit.object;
         scene.remove(bulletRef.current);
 
         const position = hit.point.clone();
@@ -232,7 +229,10 @@ export const CameraControls = ({ ...props }: PointerLockControlsProps) => {
         );
 
         decal.geometry = decalGeometry;
-        scene.add(decal);
+        decal.userData = { isAttached: true };
+
+        hit.object.attach(decal);
+        // scene.add(decal);
         console.log(scene.children);
       }
     }
@@ -245,20 +245,7 @@ export const CameraControls = ({ ...props }: PointerLockControlsProps) => {
         makeDefault
         {...props}
       />
-      <mesh
-        ref={exampleRef}
-        position={[-10, 0, 0]}
-        castShadow
-        userData={{ enemy: true }}
-      >
-        <boxBufferGeometry args={[3, 3, 3]} />
-        <meshStandardMaterial color="orange" />
-      </mesh>
-
-      {/* <CandyCane
-        ref={weaponRef}
-        scale={0.01}
-      /> */}
+      <ExamplePhysicsObject />
     </>
   );
 };
